@@ -7,6 +7,8 @@ using StarterAssets;
 using InventoryAsset;
 using CombatAsset;
 
+using Photon.Pun;
+
 public class DisappointedIlusion : MonoBehaviour
 {
 
@@ -19,6 +21,7 @@ public class DisappointedIlusion : MonoBehaviour
     private Combat _combat; 
     private ThirdPersonController _TPController;
     private CharacterController _controller;
+    private PhotonView _photonView;
 
     public float AliveTime;
     public float Damage;
@@ -37,6 +40,7 @@ public class DisappointedIlusion : MonoBehaviour
         _inventory = GetComponent<Inventory>();
         _animator = GetComponent<Animator>();
         _combat = GetComponent<Combat>();
+        _photonView = GetComponent<PhotonView>();
 
         foreach (Transform child in transform.GetComponentsInChildren<Transform>())
         {        
@@ -50,7 +54,7 @@ public class DisappointedIlusion : MonoBehaviour
 
                     _psCreate.Add(_ps);
 
-                    _ps.Play();
+                    _photonView.RPC("_ps.Play()", RpcTarget.All);
 
                 }
             }
@@ -74,7 +78,7 @@ public class DisappointedIlusion : MonoBehaviour
         EquipmentSync();
 
         _input.sprint = true;
-
+        
         _TPController.ChangeLongSpeed(Speed/_TPController.SprintSpeed, Speed/_TPController.SprintSpeed);
 
     }
@@ -113,7 +117,7 @@ public class DisappointedIlusion : MonoBehaviour
 
             }
 
-            Destroy(gameObject);
+            PhotonNetwork.Destroy(gameObject);
 
         }
 
@@ -141,7 +145,7 @@ public class DisappointedIlusion : MonoBehaviour
         if (!_combatCollider && collider.gameObject.layer == LayerMask.NameToLayer("Default"))
         {   
             
-            Destroy(gameObject);
+            PhotonNetwork.Destroy(gameObject);
 
         }
 
@@ -150,7 +154,7 @@ public class DisappointedIlusion : MonoBehaviour
 
             _combatCollider.TakeDamage(Damage, DamageType.sword);
 
-            Destroy(gameObject);
+            PhotonNetwork.Destroy(gameObject);
 
         }
 

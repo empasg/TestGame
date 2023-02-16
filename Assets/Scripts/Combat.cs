@@ -169,6 +169,8 @@ namespace CombatAsset
 
             foreach (Transform child in GameObject.FindGameObjectWithTag("VFX").transform)
             {
+                if (!_photonView.IsMine) return;
+
                 if (child.name.Contains("invisibleDash"))
                 {
                     foreach (Transform _child in child)
@@ -1018,7 +1020,12 @@ namespace CombatAsset
             for(int i = 0; i < Mathf.RoundToInt( dashSpeed ); i++)
             {
 
-                var ilusion = Instantiate(gameObject);
+                float cornerAngle = 2f * Mathf.PI / (float)Mathf.RoundToInt( dashSpeed ) * i;
+                float radius = 2;
+
+                var pos = transform.TransformPoint( new Vector3( Mathf.Cos(cornerAngle * 0.5f) * radius, 0, Mathf.Sin(cornerAngle * 0.5f) * radius ) );
+
+                var ilusion = PhotonNetwork.Instantiate(gameObject.name.Replace("(Clone)", ""), pos, Quaternion.identity);
                 var _ilusionComp = ilusion.AddComponent<DisappointedIlusion>();
 
                 _ilusionComp.Parent = gameObject;
@@ -1067,11 +1074,6 @@ namespace CombatAsset
 
                 }
 
-                float cornerAngle = 2f * Mathf.PI / (float)Mathf.RoundToInt( dashSpeed ) * i;
-                float radius = 2;
-
-                ilusion.transform.position = transform.TransformPoint( new Vector3( Mathf.Cos(cornerAngle * 0.5f) * radius, 0, Mathf.Sin(cornerAngle * 0.5f) * radius ) );
-
                 yield return new WaitForSeconds( ( dashSpeed * 2 ) / ( dashSpeed * dashSpeed ) );
             }
 
@@ -1089,7 +1091,7 @@ namespace CombatAsset
 
                 Vector3 pos = transform.TransformPoint(_controller.center + Vector3.up * Random.Range(-0.5f,0.5f) + Vector3.right * Random.Range(-0.5f,0.5f) );
 
-                var _newRedCrystal = Instantiate(_redCrystal, pos, transform.rotation);
+                var _newRedCrystal = PhotonNetwork.Instantiate(_redCrystal.name, pos, _mainCamera.transform.rotation);
                 var _redCrystalRB = _newRedCrystal.GetComponent<Rigidbody>();
                 var _crystal = _newRedCrystal.GetComponent<Crystal>();
 

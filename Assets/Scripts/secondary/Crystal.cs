@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
-
+using Photon.Pun;
 
 public class Crystal : MonoBehaviour
 {
@@ -50,7 +47,7 @@ public class Crystal : MonoBehaviour
         
         time -= Time.deltaTime;
 
-        if (time <= 0) Destroy(gameObject);
+        if (time <= 0) PhotonNetwork.Destroy(gameObject);
 
     }
 
